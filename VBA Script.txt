@@ -1,0 +1,143 @@
+Sub StockMarketAnalysis()
+    
+    Dim w As Worksheet
+
+    For Each w In Worksheets
+
+        w.Cells(1, 9).Value = "Ticker"
+        w.Cells(1, 10).Value = "Yearly Change"
+        w.Cells(1, 11).Value = "Percent Change"
+        w.Cells(1, 12).Value = "Total Stock Volume"
+
+        Dim ticker_symbol As String
+        Dim total_volume_stock As Double
+        Dim rowcount As Long
+        Dim stock_open_year As Double
+        Dim stock_close_year As Double
+        Dim stock_year_change As Double
+        Dim percent_change As Double
+        Dim lastrow As Long
+
+        total_volume_stock = 0
+        rowcount = 2
+        stock_open_year = 0
+        stock_close_year = 0
+        year_change = 0
+        percent_change = 0
+        lastrow = w.Cells(Rows.Count, 1).End(xlUp).Row
+
+        
+        For i = 2 To lastrow
+            
+            If w.Cells(i, 1).Value <> w.Cells(i - 1, 1).Value Then
+
+                stock_open_year = w.Cells(i, 3).Value
+
+            End If
+
+            
+            total_volume_stock = total_volume_stock + w.Cells(i, 7)
+
+            
+            If w.Cells(i, 1).Value <> w.Cells(i + 1, 1).Value Then
+
+                w.Cells(rowcount, 9).Value = w.Cells(i, 1).Value
+                w.Cells(rowcount, 12).Value = total_volume_stock
+                stock_close_year = w.Cells(i, 6).Value
+                year_change = stock_close_year - stock_open_year
+                w.Cells(rowcount, 10).Value = year_change
+
+
+                If year_change >= 0 Then
+                    w.Cells(rowcount, 10).Interior.ColorIndex = 4
+                Else
+                    w.Cells(rowcount, 10).Interior.ColorIndex = 3
+                End If
+
+                
+                If stock_open_year = 0 And stock_close_year = 0 Then
+                    percent_change = 0
+                    w.Cells(rowcount, 11).Value = percent_change
+                    w.Cells(rowcount, 11).NumberFormat = "0.00%"
+                ElseIf stock_open_year = 0 Then
+                    Dim percent_change_NA As String
+                    percent_change_NA = "New Stock"
+                    w.Cells(rowcount, 11).Value = percent_change
+                Else
+                    percent_change = year_change / stock_open_year
+                    w.Cells(rowcount, 11).Value = percent_change
+                    w.Cells(rowcount, 11).NumberFormat = "0.00%"
+                End If
+
+                rowcount = rowcount + 1
+
+                
+                total_volume_stock = 0
+                stock_open_year = 0
+                stocl_close_year = 0
+                year_change = 0
+                percent_change = 0
+                
+            End If
+        Next i
+
+       
+        w.Cells(2, 15).Value = "Greatest % Increase"
+        w.Cells(3, 15).Value = "Greatest % Decrease"
+        w.Cells(4, 15).Value = "Greatest Total Volume"
+        w.Cells(1, 16).Value = "Ticker"
+        w.Cells(1, 17).Value = "Value"
+
+       
+        lastrow = w.Cells(Rows.Count, 9).End(xlUp).Row
+
+      
+        Dim best_s As String
+        Dim best_v As Double
+    Dim worst_s As String
+        Dim worst_v As Double
+    Dim most_volume_s As String
+        Dim most_volume_v As Double
+
+  
+        best_v = w.Cells(2, 11).Value
+        worst_v = w.Cells(2, 11).Value
+        most_volume_v = w.Cells(2, 12).Value
+
+  
+        For x = 2 To lastrow
+
+            
+            If w.Cells(x, 11).Value > best_v Then
+                best_v = w.Cells(x, 11).Value
+                best_s = w.Cells(x, 9).Value
+            End If
+
+            
+            If w.Cells(x, 11).Value < worst_v Then
+                worst_v = w.Cells(x, 11).Value
+                worst_s = w.Cells(x, 9).Value
+            End If
+
+            If w.Cells(x, 12).Value > most_volume_v Then
+                most_volume_v = w.Cells(x, 12).Value
+                most_volume_s = w.Cells(x, 9).Value
+            End If
+
+        Next x
+
+       
+        w.Cells(2, 16).Value = best_s
+        w.Cells(2, 17).Value = best_v
+        w.Cells(2, 17).NumberFormat = "0.00%"
+        w.Cells(3, 16).Value = worst_s
+        w.Cells(3, 17).Value = worst_v
+        w.Cells(3, 17).NumberFormat = "0.00%"
+        w.Cells(4, 16).Value = most_volume_s
+        w.Cells(4, 17).Value = most_volume_v
+
+
+    Next w
+
+End Sub
+
